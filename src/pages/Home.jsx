@@ -20,8 +20,8 @@ export default function Home() {
   const [activeRow, setActiveRow] = useState(0);
   const [activeCard, setActiveCard] = useState(0);
 
-  const rowRefs = useRef([]);
   const cardRefs = useRef([]);
+  const savedCardPositions = useRef({});
 
   useEffect(() => {
     async function loadData() {
@@ -57,21 +57,33 @@ export default function Home() {
       const currentItems = animeData[currentSection?.title] || [];
 
       switch (event.key) {
-        case 'ArrowRight':
-          setActiveCard((prev) => Math.min(prev + 1, currentItems.length - 1));
+        case 'ArrowRight': {
+          const nextCard = Math.min(activeCard + 1, currentItems.length - 1);
+          setActiveCard(nextCard);
+          savedCardPositions.current[activeRow] = nextCard;
           break;
+        }
 
-        case 'ArrowLeft':
-          setActiveCard((prev) => Math.max(prev - 1, 0));
+        case 'ArrowLeft': {
+          const nextCard = Math.max(activeCard - 1, 0);
+          setActiveCard(nextCard);
+          savedCardPositions.current[activeRow] = nextCard;
           break;
+        }
 
-        case 'ArrowDown':
-          setActiveRow((prev) => Math.min(prev + 1, sections.length - 1));
+        case 'ArrowDown': {
+          const nextRow = Math.min(activeRow + 1, sections.length - 1);
+          setActiveRow(nextRow);
+          setActiveCard(savedCardPositions.current[nextRow] || 0);
           break;
+        }
 
-        case 'ArrowUp':
-          setActiveRow((prev) => Math.max(prev - 1, 0));
+        case 'ArrowUp': {
+          const nextRow = Math.max(activeRow - 1, 0);
+          setActiveRow(nextRow);
+          setActiveCard(savedCardPositions.current[nextRow] || 0);
           break;
+        }
 
         default:
           break;
@@ -91,18 +103,14 @@ export default function Home() {
         <h1 className='text-5xl font-black'>Anime TV</h1>
       </div>
 
-      <div className='space-y-10'>
+      <div className='space-y-12'>
         {sections.map((section, rowIndex) => (
-          <div
-            key={section.title}
-            ref={(el) => (rowRefs.current[rowIndex] = el)}
-            className='transition-all duration-300'
-          >
+          <div key={section.title}>
             <h2 className='text-2xl font-bold mb-5 px-8'>
               {section.title}
             </h2>
 
-            <div className='flex gap-5 overflow-x-auto overflow-y-visible px-8 py-4 scrollbar-hide scroll-smooth'>
+            <div className='flex gap-5 overflow-x-auto overflow-y-visible px-8 py-6 scrollbar-hide scroll-smooth'>
               {(animeData[section.title] || []).map((anime, cardIndex) => {
                 const isActive = activeRow === rowIndex && activeCard === cardIndex;
 
@@ -114,10 +122,10 @@ export default function Home() {
                   <div
                     key={anime.mal_id}
                     ref={(el) => (cardRefs.current[rowIndex][cardIndex] = el)}
-                    className={`min-w-[170px] rounded-2xl overflow-hidden bg-zinc-900 transition-all duration-300 ${
+                    className={`min-w-[170px] rounded-2xl overflow-hidden bg-zinc-900 transition-all duration-300 flex-shrink-0 ${
                       isActive
-                        ? 'scale-110 ring-4 ring-cyan-400 z-20 opacity-100'
-                        : 'scale-100 opacity-60'
+                        ? 'scale-110 ring-4 ring-cyan-400 opacity-100 z-30'
+                        : 'scale-100 opacity-50'
                     }`}
                   >
                     <img
