@@ -141,7 +141,7 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-12 select-none">
         {sections.map((section, rowIndex) => (
           <div
             className="select-none"
