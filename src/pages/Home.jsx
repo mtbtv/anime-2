@@ -144,7 +144,7 @@ export default function Home() {
       <div className="space-y-12">
         {sections.map((section, rowIndex) => (
           <div
-            clasName="select-none"
+            className="select-none"
             key={section.title}
             ref={(el) =>
               (rowRefs.current[rowIndex] = el)
