@@ -227,9 +227,6 @@ export default function Home() {
       </div>
     </div>
   );
-}
-```
-      });
     }
   }, [activeRow, activeCard]);
 
