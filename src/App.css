@@ -170,3 +170,60 @@ body {
   clip: rect(0, 0, 0, 0);
   border: 0;
   }
+/* --- Micro Layout Alignment Grid --- */
+.card-meta-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Spreads score, type, and episodes evenly */
+  width: 100%;
+  margin-top: 2px;
+}
+
+.meta-score {
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffb612;
+}
+
+/* --- Universal Base Badge Styles --- */
+.meta-badge {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.episode-tag {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- Dynamic Show-Type Colors --- */
+.tag-tv {
+  background-color: rgba(0, 140, 255, 0.25);
+  color: #79c3ff;
+  border: 1px solid rgba(0, 140, 255, 0.4);
+}
+
+.tag-movie {
+  background-color: rgba(180, 50, 240, 0.25);
+  color: #e2adff;
+  border: 1px solid rgba(180, 50, 240, 0.4);
+}
+
+.tag-ova, .tag-ona {
+  background-color: rgba(0, 200, 115, 0.22);
+  color: #9effd4;
+  border: 1px solid rgba(0, 200, 115, 0.35);
+}
+
+.tag-special {
+  background-color: rgba(240, 160, 0, 0.22);
+  color: #ffe19c;
+  border: 1px solid rgba(240, 160, 0, 0.35);
+  }
