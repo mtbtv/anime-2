@@ -3,15 +3,37 @@ import React from "react";
 const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
   const isActiveRow = rowIndex === activeRow;
 
-  // HORIZONTAL CROSSHAIR TRACKING ENGINE
-  // Card Footprint: 155px width + 20px gap = 175px total.
-  // Card Centerpoint: 155px / 2 = 77.5px.
-  // Viewport padding offset adjustment: 60px.
+  // NETFLIX BOUNDARY CLAMPING ENGINE
   const calculateHorizontalOffset = () => {
     if (!isActiveRow) return "0px";
     
-    // Calculates the shift required to lock the active card precisely at 50vw
-    return `calc(50vw - 137.5px - (${activeCol * 175}px))`;
+    const totalItems = row.items?.length || 0;
+    if (totalItems === 0) return "0px";
+
+    const viewportWidth = window.innerWidth;
+    const cardStep = 175;  // 155px width + 20px gap
+    const cardWidth = 155;
+    const leftPadding = 60; // Safe area padding-left from content-slider
+
+    // 1. Calculate the ideal translation to put the active card dead center
+    const targetTranslation = (viewportWidth / 2) - leftPadding - (activeCol * cardStep) - (cardWidth / 2);
+
+    // 2. Left Boundary Guard: Prevent the row from sliding right and leaving blank space
+    let clampedTranslation = Math.min(0, targetTranslation);
+
+    // 3. Right Boundary Guard: Prevent the row from sliding too far left at the end of the list
+    const totalRowWidth = (totalItems * cardStep) - 20;
+    const minTranslation = viewportWidth - 60 - leftPadding - totalRowWidth;
+
+    // If the total width of all cards fits on the screen without scrolling, keep it at 0px
+    if (totalRowWidth + leftPadding + 60 <= viewportWidth) {
+      return "0px";
+    }
+
+    // Apply the right boundary clamp
+    clampedTranslation = Math.max(clampedTranslation, minTranslation);
+
+    return `${clampedTranslation}px`;
   };
 
   return (
