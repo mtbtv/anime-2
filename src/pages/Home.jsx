@@ -56,7 +56,7 @@ const Home = () => {
         case "Enter":
           const selection = currentItems[activeCol];
           if (selection) {
-            alert(`Streaming Option Triggered: ${selection.title_english || selection.title}`);
+            alert(`Opening Streaming Layer for: ${selection.title_english || selection.title}`);
           }
           break;
         default:
@@ -72,23 +72,23 @@ const Home = () => {
     return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Syncing TV Layout Engine...</div>;
   }
 
-  // VERTICAL POSITIONING ENGINE:
-  // Keeps the Hero Banner locked at the top when activeRow === 0.
-  // When navigating down, it shifts the canvas so the selected row snaps 
-  // directly into the ideal viewing area (45% down the viewport height).
+  // FIXED VERTICAL FOCUS ENGINE:
+  // This calculates the exact midpoint of whichever row is currently active
+  // and offsets it dynamically against 50vh (the vertical center of the screen).
   const calculateVerticalOffset = () => {
-    if (activeRow === 0) return "0px";
+    const heroHeight = 380; // Hero banner height (350px) + margin-bottom (30px)
+    const rowHeight = 315;  // Individual row height (290px) + margin-bottom (25px)
     
-    const heroHeight = 380; // Hero (350px) + Margin (30px)
-    const previousRowsHeight = (activeRow - 1) * 315; // Row (290px) + Margin (25px)
-    const targetRowTop = heroHeight + previousRowsHeight;
+    // Find the exact center point of the current row
+    const targetRowCenter = heroHeight + (activeRow * rowHeight) + (290 / 2);
     
-    return `calc(42vh - ${targetRowTop}px)`;
+    // Subtract from 50vh to slide the active row's center directly into the screen's center line
+    return `calc(50vh - ${targetRowCenter}px)`;
   };
 
   return (
     <div className="tv-viewport">
-      {/* Moving canvas driven by the dynamic vertical calculation layout */}
+      {/* Moving canvas driven by the new vertical balancing algorithm */}
       <div 
         className="content-slider"
         style={{ transform: `translate3d(0px, ${calculateVerticalOffset()}, 0px)` }}
