@@ -5,26 +5,32 @@ body {
   color: white;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   user-select: none;
-  overflow: hidden;
+  overflow: hidden; /* Keeps standard scrollbars hidden entirely */
 }
 
 .tv-viewport {
   height: 100vh;
   width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* Keeps the cards safely tucked at the bottom half */
   position: relative;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
-/* --- Hero Banner Layout Layout --- */
+/* --- The Unified Moving Canvas --- */
+.content-slider {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding-left: 60px; /* TV Bezels Safe Area Margin */
+  padding-top: 50px;
+}
+
+/* --- Hero Banner Layout (Fixed flow) --- */
 .hero-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 55vh; /* Takes up the top half of the screen */
+  position: relative; /* CHANGED: Now moves dynamically with the container layout */
+  width: 100%;
+  height: 400px; /* Explicit height calculation boundary */
+  margin-bottom: 40px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -32,9 +38,120 @@ body {
 
 .hero-backdrop {
   position: absolute;
-  top: -20%;
+  top: 0;
   right: 0;
   width: 65%;
+  height: 100%;
+  background-size: cover;
+  background-position: center top;
+  filter: blur(2px);
+  transition: background-image 0.6s ease-in-out;
+}
+
+.hero-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #111111 45%, rgba(17, 17, 17, 0.4) 75%, transparent 100%),
+              linear-gradient(to top, #111111 5%, transparent 40%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  max-width: 550px;
+}
+
+.hero-tag {
+  color: #e50914;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.hero-title {
+  font-size: 36px;
+  margin: 10px 0;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.badge {
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status-badge {
+  background-color: #e50914;
+}
+
+.hero-description {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #cccccc;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Strict 3-line max constraint */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Content Rails Layout --- */
+.tv-row {
+  height: 310px; /* Fixed standard matrix height tracking */
+  margin-bottom: 30px;
+  box-sizing: border-box;
+}
+
+.tv-row h2 {
+  font-size: 20px;
+  margin: 0 0 12px 0;
+  color: #777777;
+  transition: color 0.3s ease;
+}
+
+.tv-row.active-row h2 {
+  color: #ffffff;
+}
+
+.cards-container {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding-top: 5px;
+  padding-bottom: 15px;
+}
+
+.anime-card {
+  width: 160px;
+  height: 230px;
+  border-radius: 6px;
+  background-color: #222;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s;
+  border: 4px solid transparent;
+}
+
+.anime-card.focused {
+  transform: scale(1.1);
+  border-color: #e50914;
+  box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.8);
+  z-index: 15;
+  }  width: 65%;
   height: 140%;
   background-size: cover;
   background-position: center top;
