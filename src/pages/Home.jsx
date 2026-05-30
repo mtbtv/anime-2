@@ -56,7 +56,7 @@ const Home = () => {
         case "Enter":
           const selection = currentItems[activeCol];
           if (selection) {
-            alert(`Opening Streaming Layer for: ${selection.title_english || selection.title}`);
+            alert(`Streaming Option Triggered: ${selection.title_english || selection.title}`);
           }
           break;
         default:
@@ -69,29 +69,34 @@ const Home = () => {
   }, [activeRow, activeCol, data]);
 
   if (loading) {
-    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Loading Entertainment Grid...</div>;
+    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Syncing TV Layout Engine...</div>;
   }
 
-  // VERTICAL MATH:
-  // When activeRow === 0, keep slider at 0px (Hero banner fully visible)
-  // When activeRow === 1, shift past Hero Banner (440px total space)
-  // When activeRow > 1, shift further up by 340px per added row track
+  // VERTICAL POSITIONING ENGINE:
+  // Keeps the Hero Banner locked at the top when activeRow === 0.
+  // When navigating down, it shifts the canvas so the selected row snaps 
+  // directly into the ideal viewing area (45% down the viewport height).
   const calculateVerticalOffset = () => {
-    if (activeRow === 0) return 0;
-    return -(440) - ((activeRow - 1) * 340);
+    if (activeRow === 0) return "0px";
+    
+    const heroHeight = 380; // Hero (350px) + Margin (30px)
+    const previousRowsHeight = (activeRow - 1) * 315; // Row (290px) + Margin (25px)
+    const targetRowTop = heroHeight + previousRowsHeight;
+    
+    return `calc(42vh - ${targetRowTop}px)`;
   };
 
   return (
     <div className="tv-viewport">
-      {/* Master slider wrapper enclosing everything together */}
+      {/* Moving canvas driven by the dynamic vertical calculation layout */}
       <div 
         className="content-slider"
-        style={{ transform: `translate3d(0px, ${calculateVerticalOffset()}px, 0px)` }}
+        style={{ transform: `translate3d(0px, ${calculateVerticalOffset()}, 0px)` }}
       >
-        {/* Upcoming Anime Carousel Slider */}
+        {/* Dynamic Auto-Scrolling Top Showcase */}
         <HeroBanner upcomingAnime={data.upcoming} />
 
-        {/* Media Rails Lists Content */}
+        {/* Categories Rail Grids */}
         {data.rows.map((row, rowIndex) => (
           <TvRow
             key={rowIndex}
