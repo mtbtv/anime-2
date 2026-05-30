@@ -56,7 +56,7 @@ const Home = () => {
         case "Enter":
           const selection = currentItems[activeCol];
           if (selection) {
-            alert(`Opening Streaming Layer for: ${selection.title_english || selection.title}`);
+            alert(`Streaming Option Triggered: ${selection.title_english || selection.title}`);
           }
           break;
         default:
@@ -72,31 +72,27 @@ const Home = () => {
     return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Syncing TV Layout Engine...</div>;
   }
 
-  // FIXED VERTICAL FOCUS ENGINE:
-  // This calculates the exact midpoint of whichever row is currently active
-  // and offsets it dynamically against 50vh (the vertical center of the screen).
+  // MODIFIED VERTICAL FOCUS ENGINE
+  // Instead of centering the row at 50vh, we lock the top baseline of the active row
+  // to exactly 38vh from the top edge. This pulls the content up and guarantees
+  // the row never hits or hides behind the bottom bezel of your TV browser.
   const calculateVerticalOffset = () => {
-    const heroHeight = 380; // Hero banner height (350px) + margin-bottom (30px)
-    const rowHeight = 315;  // Individual row height (290px) + margin-bottom (25px)
+    const heroTotalHeight = 380; // 350px height + 30px margin
+    const rowTotalHeight = 315;  // 290px height + 25px margin
     
-    // Find the exact center point of the current row
-    const targetRowCenter = heroHeight + (activeRow * rowHeight) + (290 / 2);
+    const targetRowTop = heroTotalHeight + (activeRow * rowTotalHeight);
     
-    // Subtract from 50vh to slide the active row's center directly into the screen's center line
-    return `calc(50vh - ${targetRowCenter}px)`;
+    return `calc(38vh - ${targetRowTop}px)`;
   };
 
   return (
     <div className="tv-viewport">
-      {/* Moving canvas driven by the new vertical balancing algorithm */}
       <div 
         className="content-slider"
         style={{ transform: `translate3d(0px, ${calculateVerticalOffset()}, 0px)` }}
       >
-        {/* Dynamic Auto-Scrolling Top Showcase */}
         <HeroBanner upcomingAnime={data.upcoming} />
 
-        {/* Categories Rail Grids */}
         {data.rows.map((row, rowIndex) => (
           <TvRow
             key={rowIndex}
