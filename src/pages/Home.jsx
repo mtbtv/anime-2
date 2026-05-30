@@ -34,13 +34,13 @@ const Home = () => {
         case "ArrowDown":
           if (activeRow < data.rows.length - 1) {
             setActiveRow((prev) => prev + 1);
-            setActiveCol(0);
+            setActiveCol(0); // Reset horizontal position on row jump
           }
           break;
         case "ArrowUp":
           if (activeRow > 0) {
             setActiveRow((prev) => prev - 1);
-            setActiveCol(0);
+            setActiveCol(0); // Reset horizontal position on row jump
           }
           break;
         case "ArrowRight":
@@ -69,20 +69,21 @@ const Home = () => {
   }, [activeRow, activeCol, data]);
 
   if (loading) {
-    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Syncing TV Layout Engine...</div>;
+    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Locking Crosshair Tracking Layout...</div>;
   }
 
-  // MODIFIED VERTICAL FOCUS ENGINE
-  // Instead of centering the row at 50vh, we lock the top baseline of the active row
-  // to exactly 38vh from the top edge. This pulls the content up and guarantees
-  // the row never hits or hides behind the bottom bezel of your TV browser.
+  // VERTICAL CROSSHAIR TRACKING ENGINE
+  // Midpoint of Hero banner = 350px / 2 = 175px
+  // Midpoint of any Row = 290px / 2 = 145px
   const calculateVerticalOffset = () => {
     const heroTotalHeight = 380; // 350px height + 30px margin
     const rowTotalHeight = 315;  // 290px height + 25px margin
     
-    const targetRowTop = heroTotalHeight + (activeRow * rowTotalHeight);
+    // Locates the exact center point of the currently selected row item
+    const targetRowCenter = heroTotalHeight + (activeRow * rowTotalHeight) + 145;
     
-    return `calc(38vh - ${targetRowTop}px)`;
+    // Slides that center point directly to 50vh (Vertical center of the TV screen)
+    return `calc(50vh - ${targetRowCenter}px)`;
   };
 
   return (
