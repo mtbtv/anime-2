@@ -31,7 +31,7 @@ const HeroBanner = ({ upcomingAnime }) => {
       {/* Hero Meta Content */}
       <div className="hero-content">
         <span className="hero-tag">UPCOMING BLOCKBUSTER</span>
-        <h1 className="hero-title">{currentAnime.title}</h1>
+        <h1 className="hero-title">{currentAnime.title_english}</h1>
         
         <div className="hero-badges">
           <span className="badge rating-badge">{currentAnime.rating || "Unrated"}</span>
