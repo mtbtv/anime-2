@@ -3,13 +3,15 @@ import React from "react";
 const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
   const isActiveRow = rowIndex === activeRow;
 
-  // HORIZONTAL TRACKING ENGINE:
-  // Card width (155px) + Grid Gap (20px) = 175px total footprint per card.
-  // When this row is active, we shift the container left dynamically.
-  // This ensures the selected card always remains anchored beautifully in view.
+  // HORIZONTAL CROSSHAIR TRACKING ENGINE
+  // Card Footprint: 155px width + 20px gap = 175px total.
+  // Card Centerpoint: 155px / 2 = 77.5px.
+  // Viewport padding offset adjustment: 60px.
   const calculateHorizontalOffset = () => {
     if (!isActiveRow) return "0px";
-    return `${-(activeCol * 175)}px`;
+    
+    // Calculates the shift required to lock the active card precisely at 50vw
+    return `calc(50vw - 137.5px - (${activeCol * 175}px))`;
   };
 
   return (
@@ -35,7 +37,6 @@ const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
                 })`,
               }}
             >
-              {/* Optional: Accessibility layer for TV Screen Readers */}
               <span className="sr-only">
                 {anime.title_english || anime.title}
               </span>
