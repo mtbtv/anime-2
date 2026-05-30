@@ -1,40 +1,113 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchTvHomeData } from "../api/jikan";
+import TvRow from "../components/TvRow";
 
-const sections = [
-  {
-    title: "Trending Anime",
-    endpoint: "https://api.jikan.moe/v4/top/anime?filter=airing",
-  },
-  {
-    title: "Popular Anime",
-    endpoint: "https://api.jikan.moe/v4/top/anime",
-  },
-  {
-    title: "Upcoming Anime",
-    endpoint: "https://api.jikan.moe/v4/seasons/upcoming",
-  },
-];
-
-export default function Home() {
-  const [animeData, setAnimeData] = useState({});
+const Home = () => {
+  const [rows, setRows] = useState([]);
   const [activeRow, setActiveRow] = useState(0);
-  const [activeCard, setActiveCard] = useState(0);
+  const [activeCol, setActiveCol] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const cardRefs = useRef([]);
-  const rowRefs = useRef([]);
-
+  // Load configuration from API Layer
   useEffect(() => {
-    async function loadData() {
-      const results = {};
+    let isMounted = true;
+    fetchTvHomeData().then((data) => {
+      if (isMounted) {
+        setRows(data);
+        setLoading(false);
+      }
+    });
+    return () => { isMounted = false; };
+  }, []);
 
-      for (const section of sections) {
-        try {
-          const response = await fetch(section.endpoint);
-          const json = await response.json();
-          results[section.title] = json.data || [];
-        } catch (error) {
-          console.error(error);
-          results[section.title] = [];
+  // TV Remote Key Handler
+  useEffect(() => {
+    if (rows.length === 0) return;
+
+    const handleKeyDown = (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)) {
+        e.preventDefault();
+      }
+
+      const currentItems = rows[activeRow]?.items || [];
+
+      switch (e.key) {
+        case "ArrowDown":
+          if (activeRow < rows.length - 1) {
+            setActiveRow((prev) => prev + 1);
+            setActiveCol(0);
+          }
+          break;
+        case "ArrowUp":
+          if (activeRow > 0) {
+            setActiveRow((prev) => prev - 1);
+            setActiveCol(0);
+          }
+          break;
+        case "ArrowRight":
+          if (activeCol < currentItems.length - 1) {
+            setActiveCol((prev) => prev + 1);
+          }
+          break;
+        case "ArrowLeft":
+          if (activeCol > 0) {
+            setActiveCol((prev) => prev - 1);
+          }
+          break;
+        case "Enter":
+          const selection = currentItems[activeCol];
+          if (selection) {
+            alert(`Streaming: ${selection.title}`);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeRow, activeCol, rows]);
+
+  if (loading) {
+    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Loading Anime Grid...</div>;
+  }
+
+  const verticalOffset = activeRow * -390; 
+  const currentFocusedAnime = rows[activeRow]?.items[activeCol];
+
+  return (
+    <div className="tv-viewport">
+      <div className="tv-header">
+        <h1>ANIME STREAM TV</h1>
+      </div>
+
+      <div 
+        className="rows-wrapper"
+        style={{ transform: `translate3d(0px, ${verticalOffset}px, 0px)` }}
+      >
+        {rows.map((row, rowIndex) => (
+          <TvRow
+            key={rowIndex}
+            row={row}
+            rowIndex={rowIndex}
+            activeRow={activeRow}
+            activeCol={activeCol}
+          />
+        ))}
+      </div>
+
+      {currentFocusedAnime && (
+        <div className="active-meta">
+          <h3>{currentFocusedAnime.title}</h3>
+          <p>{currentFocusedAnime.synopsis || "No synopsis available."}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Home;          results[section.title] = [];
         }
       }
 
