@@ -20,7 +20,6 @@ const Home = () => {
     return () => { isMounted = false; };
   }, []);
 
-  // TV Key Listener Mechanics
   useEffect(() => {
     if (data.rows.length === 0) return;
 
@@ -57,7 +56,7 @@ const Home = () => {
         case "Enter":
           const selection = currentItems[activeCol];
           if (selection) {
-            alert(`Now Streaming: ${selection.title}`);
+            alert(`Opening Streaming Layer for: ${selection.title_english || selection.title}`);
           }
           break;
         default:
@@ -70,22 +69,29 @@ const Home = () => {
   }, [activeRow, activeCol, data]);
 
   if (loading) {
-    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Loading Entertainment Center...</div>;
+    return <div style={{ color: "white", padding: "60px", fontSize: "24px" }}>Loading Entertainment Grid...</div>;
   }
 
-  // Dynamic row-wrapper scrolling calculations 
-  const verticalOffset = activeRow * -360;
+  // VERTICAL MATH:
+  // When activeRow === 0, keep slider at 0px (Hero banner fully visible)
+  // When activeRow === 1, shift past Hero Banner (440px total space)
+  // When activeRow > 1, shift further up by 340px per added row track
+  const calculateVerticalOffset = () => {
+    if (activeRow === 0) return 0;
+    return -(440) - ((activeRow - 1) * 340);
+  };
 
   return (
     <div className="tv-viewport">
-      {/* Auto Scrolling Hero Section from Jikan Upcoming Endpoint */}
-      <HeroBanner upcomingAnime={data.upcoming} />
-
-      {/* Media Rows Container Slider */}
+      {/* Master slider wrapper enclosing everything together */}
       <div 
-        className="rows-wrapper"
-        style={{ transform: `translate3d(0px, ${verticalOffset}px, 0px)` }}
+        className="content-slider"
+        style={{ transform: `translate3d(0px, ${calculateVerticalOffset()}px, 0px)` }}
       >
+        {/* Upcoming Anime Carousel Slider */}
+        <HeroBanner upcomingAnime={data.upcoming} />
+
+        {/* Media Rails Lists Content */}
         {data.rows.map((row, rowIndex) => (
           <TvRow
             key={rowIndex}
