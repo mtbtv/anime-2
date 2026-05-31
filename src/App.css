@@ -333,9 +333,11 @@ body {
 
 .card-type-text {
   font-size: 11px;
+  padding: 1px 5px;
   font-weight: 800;
   color: #aaaaaa;
   text-transform: uppercase;
+  background-color: #00ff00 ;
 }
 
 .card-episodes-text {
