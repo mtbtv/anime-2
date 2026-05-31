@@ -3,7 +3,7 @@ import React from "react";
 const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
   const isActiveRow = rowIndex === activeRow;
 
-  // NETFLIX BOUNDARY CLAMPING ENGINE
+  // NETFLIX BOUNDARY CLAMPING ENGINE (Calibrated for the new 170px dimensions)
   const calculateHorizontalOffset = () => {
     if (!isActiveRow) return "0px";
     
@@ -11,8 +11,8 @@ const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
     if (totalItems === 0) return "0px";
 
     const viewportWidth = window.innerWidth;
-    const cardStep = 175;  
-    const cardWidth = 155;
+    const cardWidth = 170; // 5% Larger Base Scale Layout
+    const cardStep = 190;  // 170px card width + 20px layout gap
     const leftPadding = 60; 
 
     const targetTranslation = (viewportWidth / 2) - leftPadding - (activeCol * cardStep) - (cardWidth / 2);
@@ -43,6 +43,9 @@ const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
           const isFocused = isActiveRow && colIndex === activeCol;
           const displayTitle = anime.title_english || anime.title;
           const animeType = anime.type || "TV";
+          
+          // Fallback parsing logic to check if current anime is ongoing
+          const statusText = anime.airing ? "AIRING" : "FINISHED";
 
           return (
             <div
@@ -54,22 +57,25 @@ const TvRow = ({ row, rowIndex, activeRow, activeCol }) => {
                 })`,
               }}
             >
+              {/* TOP FLOATING METADATA BADGES */}
+              <div className="card-top-badge top-left-badge">
+                ⭐ {anime.score ? anime.score.toFixed(1) : "—"}
+              </div>
+              
+              <div className={`card-top-badge top-right-badge badge-${statusText.toLowerCase()}`}>
+                {statusText}
+              </div>
+
+              {/* BOTTOM METADATA OVERLAY SHEET */}
               <div className="card-info-overlay">
                 <div className="card-title" title={displayTitle}>
                   {displayTitle}
                 </div>
                 
-                {/* Clean 3-Item Metadata Grid */}
-                <div className="card-meta-grid">
-                  <span className="meta-score">⭐ {anime.score ? anime.score.toFixed(1) : "—"}</span>
-                  
-                  {/* Colorful dynamic type tag */}
-                  <span className={`meta-badge type-tag tag-${animeType.toLowerCase()}`}>
-                    {animeType}
-                  </span>
-                  
-                  <span className="meta-badge episode-tag">
-                    {anime.episodes ? `${anime.episodes} EP` : "Unk"}
+                <div className="card-bottom-row">
+                  <span className="card-type-text">{animeType}</span>
+                  <span className="card-episodes-text">
+                    {anime.episodes ? `EP-${anime.episodes}` : "EP-?"}
                   </span>
                 </div>
               </div>
